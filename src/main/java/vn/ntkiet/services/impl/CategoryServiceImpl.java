@@ -32,10 +32,10 @@ public class CategoryServiceImpl implements ICategoryService{
 	    } else {
 	        Optional<Category> opt = findById(entity.getCategoryId());
 	        if (opt.isPresent()) {
-	            if (StringUtils.isEmpty(entity.getCategoryName())) {
-	                entity.setCategoryName(opt.get().getCategoryName());
+	            if (StringUtils.isEmpty(entity.getName())) {
+	                entity.setName(opt.get().getName());
 	            } else {
-	                entity.setCategoryName(entity.getCategoryName());
+	                entity.setName(entity.getName());
 	            }
 	        }
 	    }

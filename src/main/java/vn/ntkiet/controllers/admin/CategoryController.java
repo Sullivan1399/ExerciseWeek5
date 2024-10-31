@@ -38,7 +38,7 @@ public class CategoryController {
 	@RequestMapping("") // Sử dụng chung url ở trên
 	public String all(ModelMap model) { // Model trỏ đến interface
 		List<Category> list = categoryService.findAll();
-		model.addAttribute("list", list);
+		model.addAttribute("categories", list);
 		return "admin/categories/list";
 	}
 
@@ -46,15 +46,15 @@ public class CategoryController {
 	public String add(ModelMap model) {
 		CategoryModel category = new CategoryModel();
 		category.setIsEdit(false);
-		model.addAttribute("cate", category);
-		return "admin/categories/add";
+		model.addAttribute("category", category);
+		return "admin/categories/addOrEdit";
 	}
 
-	@PostMapping("save")
+	@PostMapping("saveOrUpdate")
 	public ModelAndView saveOrUpdate(ModelMap model, @Valid @ModelAttribute("category") CategoryModel cateModel,
 			BindingResult result) {
 		if (result.hasErrors()) {
-			return new ModelAndView("admin/category/add");
+			return new ModelAndView("admin/categories/addOrEdit");
 		}
 		Category entity = new Category();
 		// Copy từ Model sang Entity
@@ -70,7 +70,7 @@ public class CategoryController {
 		}
 		model.addAttribute("message", message);
 		// redirect về URL Controller
-		return new ModelAndView("forward:/admin/categories/searchpaginatedadmin", model);
+		return new ModelAndView("forward:/admin/categories/searchpaginated", model);
 	}
 
 	@GetMapping("/edit/{categoryId}")
@@ -85,7 +85,7 @@ public class CategoryController {
 			// Đẩy dữ liệu ra view
 			model.addAttribute("category", cateModel);
 
-			return new ModelAndView("admin/categories/add", model);
+			return new ModelAndView("admin/categories/addOrEdit", model);
 		}
 		model.addAttribute("message", "Category is not existed!!!");
 		return new ModelAndView("forward:/admin/categories", model);
@@ -99,11 +99,11 @@ public class CategoryController {
 	}
 
 	@GetMapping("search")
-	public String search(ModelMap model, @RequestParam(name = "catgoryName", required = false) String catgoryName) {
+	public String search(ModelMap model, @RequestParam(name = "name", required = false) String name) {
 		List<Category> list = null;
 		// Có nội dung truyền về không, name là tùy chọn khi required=false
-		if (StringUtils.hasText(catgoryName)) {
-			list = categoryService.findByNameContaining(catgoryName);
+		if (StringUtils.hasText(name)) {
+			list = categoryService.findByNameContaining(name);
 		} else {
 			list = categoryService.findAll();
 		}
@@ -113,16 +113,16 @@ public class CategoryController {
 	}
 
 	@GetMapping("searchpaginated")
-	public String search(ModelMap model, @RequestParam(name = "catgoryName", required = false) String catgoryName,
+	public String search(ModelMap model, @RequestParam(name = "name", required = false) String name,
 			@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
 		int count = (int) categoryService.count();
 		int currentPage = page.orElse(1);
 		int pageSize = size.orElse(3);
-		Pageable pageable = PageRequest.of(currentPage - 1, pageSize, Sort.by("catgoryName"));
+		Pageable pageable = PageRequest.of(currentPage - 1, pageSize, Sort.by("name"));
 		Page<Category> resultPage = null;
-		if (StringUtils.hasText(catgoryName)) {
-			resultPage = categoryService.findByNameContaining(catgoryName, pageable);
-			model.addAttribute("catgoryName", catgoryName);
+		if (StringUtils.hasText(name)) {
+			resultPage = categoryService.findByNameContaining(name, pageable);
+			model.addAttribute("name", name);
 		} else {
 			resultPage = categoryService.findAll(pageable);
 		}

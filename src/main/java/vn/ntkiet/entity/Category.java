@@ -25,10 +25,10 @@ public class Category implements Serializable {
 
 	@Column(name = "categoryName", columnDefinition = "NVARCHAR(200) NOT NULL")
 	@NotEmpty(message = "Không được để trống")
-	private String categoryName;
+	private String name;
 
-	@Column(name = "images", columnDefinition = "NVARCHAR(500) NULL")
-	private String images;
+//	@Column(name = "images", columnDefinition = "NVARCHAR(500) NULL")
+//	private String images;
 	// Không định nghĩa sẽ mặc định lấy tên đã được khai báo là statuss
 	private int status;
 }
